@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/6339057/draw-transparent-rectangles-and-polygons-in-pygame
