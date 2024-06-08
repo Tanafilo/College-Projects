@@ -19,6 +19,9 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 loading_bar_color = (255, 183, 77)
 loading_bar_bg_color = (220, 220, 220)
+PINK_RED = (236, 88, 0)
+PURPLE = (255, 0, 255)
+EMERALD = (80, 200, 110)
 
 # Set up
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -31,6 +34,12 @@ pygame.display.set_icon(app_icon)
 # Load images
 background = pygame.image.load("Images/background.png")
 background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+menu = pygame.image.load("Images/menu.png")
+menu = pygame.transform.scale(menu, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+game_over_bg = pygame.image.load("Images/game_over.png")
+game_over_bg = pygame.transform.scale(game_over_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 player1 = pygame.image.load("Images/icon1.png")
 player1 = pygame.transform.scale(player1, (CELL_SIZE, CELL_SIZE))
