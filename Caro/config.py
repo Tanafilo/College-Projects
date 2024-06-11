@@ -38,6 +38,12 @@ background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 menu = pygame.image.load("Images/menu.png")
 menu = pygame.transform.scale(menu, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+timer_menu = pygame.image.load("Images/timer_menu.png")
+timer_menu = pygame.transform.scale(timer_menu, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+pause_game = pygame.image.load("Images/pause.png")
+pause_game = pygame.transform.scale(pause_game, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
 game_over_bg = pygame.image.load("Images/game_over.png")
 game_over_bg = pygame.transform.scale(game_over_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 

@@ -1,7 +1,5 @@
 # Game Program
 
-from config import *
-
 from __init__ import *
 
 # Main
@@ -9,7 +7,7 @@ Caro = Game()
 
 Caro.main_menu()
 
-Caro.splash_screen(0)
+Caro.splash_screen(3.5)
 
 Caro.start_game()
 

@@ -5,6 +5,10 @@ class UI:
     User Interface class responsible for rendering various screens
     such as splash screen, main menu, and end screen.
     """
+    def __init__(self):
+        self.__time = 10 * 60
+
+
     def __draw_splash_screen(self):
         """
         Draws the splash screen with the loading icon, game name, and loading bar background.
@@ -83,40 +87,132 @@ class UI:
         start_button = start_text.get_rect(center=(SCREEN_WIDTH * 7 // 8 - 20, SCREEN_HEIGHT * 3 // 4 - 10))
         screen.blit(start_text, start_button)
 
-        # Time
-        time_text = button_font.render("Time Set", True, WHITE)
-        time_button = time_text.get_rect(center=(SCREEN_WIDTH * 7 // 8 - 20, SCREEN_HEIGHT * 3 // 4 + 80))
-        screen.blit(time_text, time_button)
-
         # Exit
         exit_text = button_font.render("Exit", True, WHITE)
-        exit_button = exit_text.get_rect(center=(SCREEN_WIDTH * 7 // 8 - 20, SCREEN_HEIGHT * 3 // 4 + 170))
+        exit_button = exit_text.get_rect(center=(SCREEN_WIDTH * 7 // 8 - 20, SCREEN_HEIGHT * 3 // 4 + 80))
         screen.blit(exit_text, exit_button)
 
         # Update
         pygame.display.flip()
-        return start_button, time_button, exit_button
+
+        return start_button, exit_button
 
 
     def main_menu(self):
         """
-        Displays the main menu screen and handles button interactions.
+        Displays the main menu and handles interactions.
         """
         while True:
-            start_button, time_button, exit_button = self.__draw_main_menu()
-
+            start_button, exit_button = self.__draw_main_menu()
+            
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if start_button.collidepoint(event.pos):  # Press start
+                        self.timer_menu()
+
                         return
-                    
-                    elif time_button.collidepoint(event.pos):  # Press time
-                        print("Time Set button clicked")  # Placeholder for setting time functionality
 
                     elif exit_button.collidepoint(event.pos):  # Press exit
                         self.terminate()
 
+            
             clock.tick(60)
+
+
+    def __timer_menu_display(self):
+        """
+        Draws timer menu with 6 timer options
+        """
+        font = pygame.font.Font(None, 80)
+
+        screen.blit(timer_menu, (0, 0))
+        
+        set_time = font.render("Set time", True, loading_bar_color)
+        screen.blit(set_time, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 200))
+
+        # 1, 2, 5, 10, 15, 30 minutes
+        one_min = font.render("1 minute", True, loading_bar_color)
+        one_min_button = one_min.get_rect(center=(SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 - 70))
+        
+        two_min = font.render("2 minute", True, loading_bar_color)
+        two_min_button = two_min.get_rect(center=(SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 + 30))
+        
+        five_min = font.render("5 minute", True, loading_bar_color)
+        five_min_button = five_min.get_rect(center=(SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 + 130))
+                
+        ten_min = font.render("10 minute", True, loading_bar_color)
+        ten_min_button = ten_min.get_rect(center=(SCREEN_WIDTH // 2 + 200, SCREEN_HEIGHT // 2 - 70))
+
+        fifteen_min = font.render("15 minute", True, loading_bar_color)
+        fifteen_min_button = fifteen_min.get_rect(center=(SCREEN_WIDTH // 2 + 200, SCREEN_HEIGHT // 2 + 30))
+
+        thirty_min = font.render("30 minute", True, loading_bar_color)
+        thirty_min_button = thirty_min.get_rect(center=(SCREEN_WIDTH // 2 + 200, SCREEN_HEIGHT // 2 + 130))
+
+        screen.blit(one_min, one_min_button)
+        
+        screen.blit(two_min, two_min_button)
+        
+        screen.blit(five_min, five_min_button)
+        
+        screen.blit(ten_min, ten_min_button) 
+        
+        screen.blit(fifteen_min, fifteen_min_button)
+        
+        screen.blit(thirty_min, thirty_min_button)
+
+        pygame.display.flip()
+
+        return one_min_button, two_min_button, five_min_button, ten_min_button, fifteen_min_button, thirty_min_button
+
+
+    def timer_menu(self):
+        """
+        Displays the timer menu and handle interactions
+        """
+        while True:
+            one_min_button, two_min_button, five_min_button, ten_min_button, fifteen_min_button, thirty_min_button = self.__timer_menu_display()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.terminate()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if one_min_button.collidepoint(event.pos):  
+                        self.__time = 1 * 60
+
+                        return
+                    
+                    elif two_min_button.collidepoint(event.pos):  
+                        self.__time = 2 * 60
+
+                        return
+                
+                    elif five_min_button.collidepoint(event.pos):  
+                        self.__time = 5 * 60
+
+                        return
+
+                    elif ten_min_button.collidepoint(event.pos):  
+                        self.__time = 10 * 60
+
+                        return
+                    
+                    elif fifteen_min_button.collidepoint(event.pos):  
+                        self.__time = 15 * 60
+
+                        return
+
+                    elif thirty_min_button.collidepoint(event.pos):  
+                        self.__time = 30 * 60
+
+                        return
+
+            clock.tick(60)
+
+            
+    def get_time(self):
+        return self.__time
 
 
     def game_over_screen(self, winner):
@@ -135,10 +231,11 @@ class UI:
                 
         # Winner text
         font = pygame.font.Font(None, 80)
-        if winner != 0:
+
+        if winner != 0: # No draw
             winner = font.render(f"Player {winner} Won", True, PINK_RED)
         
-        else:
+        else: # Draw
             winner = font.render("Match Draw", True, PINK_RED)
 
         screen.blit(winner, ((SCREEN_WIDTH - winner.get_width()) // 2, SCREEN_HEIGHT // 2 - 80))
@@ -154,12 +251,12 @@ class UI:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    Caro.terminate()
+                    self.terminate()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if restart_button.collidepoint(event.pos):
                         return
-
+                    
 
     def terminate(self):
         """
@@ -170,49 +267,88 @@ class UI:
         exit()
 
 
+class Time:
+    def __init__(self, match_time):
+        self.player1_time = match_time
+        
+        self.player2_time = match_time 
+        
+        self.last_update_time = time.time()
+
+    def update_check(self, current_player, pause):
+        """
+        Updates the time and check for any winning player by timeout
+
+        Args:
+            current_player (int): shows the current player
+        """
+        if pause:
+            return None
+
+        current_time = time.time()
+        
+        elapsed_time = current_time - self.last_update_time
+        
+        self.last_update_time = current_time
+
+        if current_player == 1:
+            self.player1_time -= elapsed_time
+
+            if self.player1_time <= 0:
+                return 2  # Player 2 wins by timeout
+        else:
+            self.player2_time -= elapsed_time
+
+            if self.player2_time <= 0:
+                return 1  # Player 1 wins by timeout
+
+        return None  # No winner by timeout
+
+
+    def display(self):
+        """
+        Draw the timer box in the game
+        """
+        pygame.draw.rect(screen, loading_bar_color, pygame.Rect(SCREEN_WIDTH // 2 - 118, 10, 200, 60))
+
+        pygame.draw.rect(screen, loading_bar_color, pygame.Rect(SCREEN_WIDTH // 2 - 118, SCREEN_HEIGHT - 68, 200, 60))
+        
+        # Player 1 timer
+        timer_font = pygame.font.Font(None, 70)
+
+        player1_minutes = int(self.player1_time) // 60
+
+        player1_seconds = int(self.player1_time) % 60
+
+        player1_time_text = f"{player1_minutes:02}:{player1_seconds:02}"
+        
+        player1_timer = timer_font.render(f"{player1_time_text}", True, WHITE)
+        
+        screen.blit(player1_timer, (SCREEN_WIDTH // 2 - 80, 17))
+
+        # Player 2 timer
+        player2_minutes = int(self.player2_time) // 60
+        
+        player2_seconds = int(self.player2_time) % 60
+        
+        player2_time_text = f"{player2_minutes:02}:{player2_seconds:02}"
+        
+        player2_timer = timer_font.render(f"{player2_time_text}", True, WHITE)
+        
+        screen.blit(player2_timer, (SCREEN_WIDTH // 2 - 80, SCREEN_HEIGHT - 60))
+        
+
+        pygame.display.flip()
+
+
 class Setting:
     """
     Settings class for managing and displaying various game settings
     such as player names, time, and scores.
     """  
-    def __name_display(self):
-        """
-        Displays the names of the players.
-        """
-        name_font = pygame.font.Font(None, 70)
-        name_1 = name_font.render("Player 1", True, WHITE)
-        name_2 = name_font.render("Player 2", True, WHITE)
-
-        screen.blit(name_1, (80, SCREEN_HEIGHT * 1 // 8 - 105))
-        screen.blit(name_2, (80, SCREEN_HEIGHT - 60))
-        screen.blit(avatar_1, (100 + BOARD_WIDTH, SCREEN_HEIGHT * 1 // 8 - 100))
-        screen.blit(avatar_2, (100 + BOARD_WIDTH, SCREEN_HEIGHT * 7 // 8 - 55))
-
-
-    def __time_display(self):
-        """
-        Displays the time settings (placeholder).
-        """
-        pass
-
-
-    def __scoreboard_display(self, score):
-        """
-        Displays the scoreboard.
-
-        Args:
-            score (list): Store the player score
-        """
-        font = pygame.font.Font(None, 120)
-
-        score_board = font.render(f"{score[0]} : {score[1]}", True, loading_bar_color)
-
-        screen.blit(score_board, (SCREEN_WIDTH * 7/8 - score_board.get_width(), SCREEN_HEIGHT * 2/8))
-
-
     def __draw(self):
         """
-        Displays stalemate option
+        Displays draw option
         """
         font = pygame.font.Font(None, 65)
 
@@ -285,29 +421,10 @@ class Setting:
         return to_main_menu_button
 
 
-    def __agreement(self):
-        """
-        Displays confirmation box to make sure of the user choice
-        
-        Args:
-            prompt (string): the prompt displayed in the text box
-        """
-        
-
     def option_display(self, score):
         """
         Displays game options.
-
-        Args:
-            score (list): store the player score
         """
-        # Display buttons
-        self.__name_display()
-        
-        self.__time_display()
-
-        self.__scoreboard_display(score)
-
         return self.__draw(), self.__resign(), self.__pause(), self.__to_main_menu(), self.__exit()
                 
 
@@ -324,32 +441,36 @@ class Game(UI, Setting):
             player (int): The player (1 or 2).
             __score (int list): Store the score of each player
         """
-        self.player = player
-        
-        self.space = 80
+        super().__init__()
 
+        self.__player = player
+        
         self.__score = [0] * 2
 
-    
-    def draw_board(self):
+        self.__paused = False
+
+        
+    def __board_display(self):
         """
         Draws the game board with grid lines.
         """
+        self.__board_space = 80
+
         screen.blit(background, (0, 0))
 
         # Draw grid
         for width in range(BOARD_SIZE + 1):
             pygame.draw.line(screen, WHITE, 
-                             (width * CELL_SIZE + self.space, self.space), 
-                             (width * CELL_SIZE + self.space, BOARD_WIDTH + self.space), BORDER_WIDTH)
+                             (width * CELL_SIZE + self.__board_space, self.__board_space), 
+                             (width * CELL_SIZE + self.__board_space, BOARD_WIDTH + self.__board_space), BORDER_WIDTH)
 
         for height in range(BOARD_SIZE + 1):
             pygame.draw.line(screen, WHITE, 
-                             (self.space, height * CELL_SIZE + self.space), 
-                             (BOARD_WIDTH + self.space, height * CELL_SIZE + self.space), BORDER_WIDTH)
+                             (self.__board_space, height * CELL_SIZE + self.__board_space), 
+                             (BOARD_WIDTH + self.__board_space, height * CELL_SIZE + self.__board_space), BORDER_WIDTH)
 
 
-    def draw_piece(self, column, row):
+    def __piece_display(self, column, row):
         """
         Draws a piece on the board at the specified column and row.
         
@@ -357,26 +478,107 @@ class Game(UI, Setting):
             column (int): The column index for the piece.
             row (int): The row index for the piece.
         """
-        self.board[row][column] = self.player
+        self.__board[row][column] = self.__player
 
-        if self.player == 1:
-            screen.blit(player1, (column * CELL_SIZE + self.space, row * CELL_SIZE + self.space))
-        else:
-            screen.blit(player2, (column * CELL_SIZE + self.space, row * CELL_SIZE + self.space))
+        if self.__board[row][column] == 1:
+            screen.blit(player1, (column * CELL_SIZE + self.__board_space, row * CELL_SIZE + self.__board_space))
 
-        self.player = 3 - self.player
+        elif self.__board[row][column] == 2:
+            screen.blit(player2, (column * CELL_SIZE + self.__board_space, row * CELL_SIZE + self.__board_space))
+
+        self.__player = 3 - self.__player
+    
+
+    def __player_display(self):
+        """
+        Displays the names and avatars of the players.
+        """
+        name_font = pygame.font.Font(None, 70)
+        name_1 = name_font.render("Player 1", True, WHITE)
+        name_2 = name_font.render("Player 2", True, WHITE)
+
+        screen.blit(name_1, (80, SCREEN_HEIGHT * 1 // 8 - 105))
+        screen.blit(name_2, (80, SCREEN_HEIGHT - 60))
+        screen.blit(avatar_1, (100 + BOARD_WIDTH, SCREEN_HEIGHT * 1 // 8 - 100))
+        screen.blit(avatar_2, (100 + BOARD_WIDTH, SCREEN_HEIGHT * 7 // 8 - 55))
+
+
+    def __scoreboard_display(self):
+        """
+        Displays the scoreboard.
+        """
+        font = pygame.font.Font(None, 120)
+
+        score_board = font.render(f"{self.__score[0]} : {self.__score[1]}", True, loading_bar_color)
+
+        screen.blit(score_board, (SCREEN_WIDTH * 7/8 - score_board.get_width(), SCREEN_HEIGHT * 2/8))
 
     
+    def pause_game(self):
+        """
+        Displays Pause game screen and handles interactions
+        """
+        self.__paused = True
+        
+        screen.blit(pause_game, (0, 0))
+
+        font = pygame.font.Font(None, 100)
+        
+        pause_text = font.render("Game Paused", True, WHITE)
+        
+        screen.blit(pause_text, ((SCREEN_WIDTH - pause_text.get_width()) // 2, SCREEN_HEIGHT // 2 - 75))
+
+        font = pygame.font.Font(None, 85)
+
+        resume_text = font.render("Press any key to resume", True, WHITE)
+
+        screen.blit(resume_text, ((SCREEN_WIDTH - resume_text.get_width()) // 2, SCREEN_HEIGHT // 2 + 50))
+        
+        pygame.display.flip()
+
+        while self.__paused:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.terminate()
+
+                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    self.__paused = False
+                    
+                    self.__timer.last_update_time = time.time()  # Update timer to avoid jump
+    
+
+    def __redraw_pieces(self):
+        """
+        Redraw all pieces on the board based on the current board state.
+        """
+        for row in range(BOARD_SIZE):
+            for column in range(BOARD_SIZE):
+                if self.__board[row][column] == 1:
+                    screen.blit(player1, (column * CELL_SIZE + self.__board_space, row * CELL_SIZE + self.__board_space))
+
+                elif self.__board[row][column] == 2:
+                    screen.blit(player2, (column * CELL_SIZE + self.__board_space, row * CELL_SIZE + self.__board_space))
+
+    
+
     def start_game(self):
         """
         Initializes the game board, draws the board, adds UI, and run the game
         """
-        self.board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)] # Reset board
-
-        first_player = self.player
+        self.__board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)] # Reset board
         
-        self.draw_board()
+        self.__timer = Time(self.get_time())
+        
+        first_player = self.__player
 
+        # Displays all the basics 
+        self.__board_display()
+        
+        self.__player_display()
+
+        self.__scoreboard_display()
+
+        # Game buttons
         draw_button, resign_button, pause_button, menu_button, exit_button = self.option_display(self.__score)
 
         while True:
@@ -385,38 +587,58 @@ class Game(UI, Setting):
                     self.terminate()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.__paused:
+                        continue
+
                     width, height = event.pos
 
-                    column = (width - self.space) // CELL_SIZE
-                    row = (height - self.space) // CELL_SIZE
+                    column = (width - self.__board_space) // CELL_SIZE
+                    row = (height - self.__board_space) // CELL_SIZE
 
-                    if 0 <= column < BOARD_SIZE and 0 <= row < BOARD_SIZE and self.board[row][column] == 0:
-                        self.draw_piece(column, row)
+                    if 0 <= column < BOARD_SIZE and 0 <= row < BOARD_SIZE and self.__board[row][column] == 0:
+                        self.__piece_display(column, row)
 
                     if draw_button.collidepoint(event.pos): # Draw
-                        self.player = 3 - first_player
+                        self.__player = 3 - first_player
 
-                        self.check_endgame(0)
+                        self.__check_endgame(0)
 
                     elif resign_button.collidepoint(event.pos): # Resign
-                        self.check_endgame(3 - self.player)
+                        self.__check_endgame(3 - self.__player)
 
                     elif pause_button.collidepoint(event.pos): # Pause
-                        return
+                        self.pause_game()
+
+                        # Displays all the basics 
+                        self.__board_display()
+                        
+                        self.__player_display()
+
+                        self.__scoreboard_display()
+
+                        # Game buttons
+                        draw_button, resign_button, pause_button, menu_button, exit_button = self.option_display(self.__score)
+                        
+                        self.__redraw_pieces()
 
                     elif menu_button.collidepoint(event.pos): # Back to main menu
                         self.main_menu()
 
-                        self.splash_screen(0)
+                        self.splash_screen(3.5)
 
                         self.start_game()
 
                     elif exit_button.collidepoint(event.pos): # Exit game
                         self.terminate()
                     
-                    self.check_endgame(self.__check_winner())
+                    self.__check_endgame(self.__check_winner())
+            
+            self.__timer.display()
+            
+            self.__check_endgame(self.__timer.update_check(self.__player, self.__paused))
 
             pygame.display.flip()
+
 
     def __check_winner(self):
         """
@@ -425,25 +647,25 @@ class Game(UI, Setting):
         for row in range(BOARD_SIZE):
             for column in range(BOARD_SIZE):
                 # Check horizontal
-                if column < BOARD_SIZE - 4 and all(self.board[row][column] == self.board[row][column + i] != 0 for i in range(5)):
-                    return self.board[row][column]
+                if column < BOARD_SIZE - 4 and all(self.__board[row][column] == self.__board[row][column + i] != 0 for i in range(5)):
+                    return self.__board[row][column]
                 
                 # Check vertical
-                if row < BOARD_SIZE - 4 and all(self.board[row][column] == self.board[row + i][column] != 0 for i in range(5)):
-                    return self.board[row][column] 
+                if row < BOARD_SIZE - 4 and all(self.__board[row][column] == self.__board[row + i][column] != 0 for i in range(5)):
+                    return self.__board[row][column] 
                
                 # Check diagonal (down-right)
-                if row < BOARD_SIZE - 4 and column < BOARD_SIZE - 4 and all(self.board[row][column] == self.board[row + i][column + i] != 0 for i in range(5)):
-                    return self.board[row][column]
+                if row < BOARD_SIZE - 4 and column < BOARD_SIZE - 4 and all(self.__board[row][column] == self.__board[row + i][column + i] != 0 for i in range(5)):
+                    return self.__board[row][column]
 
                 # Check diagonal (down-left)
-                if row >= 4 and column < BOARD_SIZE - 4 and all(self.board[row][column] == self.board[row - i][column + i] != 0 for i in range(5)):
-                    return self.board[row][column]
+                if row >= 4 and column < BOARD_SIZE - 4 and all(self.__board[row][column] == self.__board[row - i][column + i] != 0 for i in range(5)):
+                    return self.__board[row][column]
 
         return None
 
     
-    def check_endgame(self, winner):
+    def __check_endgame(self, winner):
         """
         Checks for any winning player or match draw to load end game screen and reset the game
 
@@ -459,10 +681,10 @@ class Game(UI, Setting):
             self.__score[winner - 1] += 1
 
             if self.__score[0] < self.__score[1]: 
-                self.player = 1
+                self.__player = 1
 
             elif self.__score[0] > self.__score[1]:
-                self.player = 2
+                self.__player = 2
             
             self.game_over_screen(winner)
             
